@@ -190,7 +190,7 @@ export default function BookingDetail() {
 
           <Box>
             <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-              Loại dịch vụ
+              Dịch vụ có thể làm
             </Typography>
             <List sx={{ width: '100%', maxWidth: 480, bgcolor: 'background.paper' }}>
               {[0, 1, 2, 3].map((value) => {
