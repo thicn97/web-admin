@@ -146,7 +146,7 @@ export default function BookingDetail() {
           <Stack direction="column" spacing={4}>
             <TextField
               label="Mức lương trung bình"
-              defaultValue="213124"
+              defaultValue="200000VND/giờ"
               InputProps={{
                 readOnly: true,
               }}
