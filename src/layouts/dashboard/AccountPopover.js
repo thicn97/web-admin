@@ -12,21 +12,6 @@ import account from '../../_mock/account';
 
 const MENU_OPTIONS = [
   {
-    label: 'Tổng quan',
-    icon: 'eva:home-fill',
-    linkTo: '/home',
-  },
-  {
-    label: 'Trang cá nhân',
-    icon: 'eva:person-fill',
-    linkTo: '#',
-  },
-  {
-    label: 'Cài đặt',
-    icon: 'eva:settings-2-fill',
-    linkTo: '#',
-  },
-  {
     label: 'Đăng xuất',
     icon: '',
     linkTo: '/login',
@@ -103,8 +88,6 @@ export default function AccountPopover() {
             </MenuItem>
           ))}
         </Stack>
-
-        
       </MenuPopover>
     </>
   );
