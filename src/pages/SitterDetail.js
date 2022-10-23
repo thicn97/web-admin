@@ -33,7 +33,7 @@ const steps = ['Đặt lịch', 'Đang thực hiện', 'Hoàn thành'];
 
 export default function BookingDetail() {
   const { sitterId } = useParams();
-  useEffect(() => { }, [sitterId]);
+  useEffect(() => {}, [sitterId]);
 
   const [checked, setChecked] = useState([0, 2]);
 
@@ -145,7 +145,7 @@ export default function BookingDetail() {
           </Stack>
           <Stack direction="column" spacing={4}>
             <TextField
-              label="Mã Nhân Viên"
+              label="Mức lương trung bình"
               defaultValue="213124"
               InputProps={{
                 readOnly: true,
@@ -179,7 +179,7 @@ export default function BookingDetail() {
               variant="outlined"
             />
             <TextField
-              label="Mã căn cước công dân"
+              label="Căn cước công dân"
               defaultValue="123456789123"
               InputProps={{
                 readOnly: true,
@@ -226,7 +226,12 @@ export default function BookingDetail() {
           />
         </Stack>
         <Stack sx={{ width: '20%', p: 2 }}>
-          <Button variant="contained" component={RouterLink} to="/dashboard/sitlist" startIcon={<Iconify icon="akar-icons:arrow-back-thick" />}>
+          <Button
+            variant="contained"
+            component={RouterLink}
+            to="/dashboard/sitlist"
+            startIcon={<Iconify icon="akar-icons:arrow-back-thick" />}
+          >
             Trở về
           </Button>
           <Stack mb={2} />
