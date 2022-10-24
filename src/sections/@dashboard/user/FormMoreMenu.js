@@ -1,16 +1,23 @@
 import { useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
+import { approveApplied } from '../../../store/actions';
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu() {
+export default function UserMoreMenu({ appliedForm }) {
+  const dispatch = useDispatch();
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleApprove = () => {
+    console.log(appliedForm);
+    dispatch(approveApplied(appliedForm?.email));
+  };
   return (
     <>
       <IconButton ref={ref} onClick={() => setIsOpen(true)}>
@@ -34,7 +41,7 @@ export default function UserMoreMenu() {
           <ListItemText primary="Xem chi tiết" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
 
-        <MenuItem sx={{ color: 'text.secondary' }}>
+        <MenuItem sx={{ color: 'text.secondary' }} onClick={() => handleApprove()}>
           <ListItemIcon>
             <Iconify icon="akar-icons:circle-check" width={24} height={24} />
           </ListItemIcon>

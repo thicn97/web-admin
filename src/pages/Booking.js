@@ -1,7 +1,9 @@
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 // material
 import {
   Card,
@@ -26,7 +28,8 @@ import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, ScheduleMoreMenu } from '../sections/@dashboard/user';
 // mock
-import USERLIST from '../_mock/booking';
+
+import { getAllBooking } from '../store/actions';
 
 // ----------------------------------------------------------------------
 
@@ -34,8 +37,8 @@ const TABLE_HEAD = [
   { id: 'num', label: 'STT', alignRight: false },
   { id: 'id', label: 'Mã đơn', alignRight: false },
   { id: 'sitName', label: 'Chăm sóc viên', alignRight: false },
-  { id: 'cusName', label: 'Khách hàng', alignRight: false },
-  { id: 'serName', label: 'Dịch vụ', alignRight: false },
+  { id: 'cusName', label: 'Địa điểm', alignRight: false },
+  { id: 'serName', label: 'Giá tiền', alignRight: false },
   { id: 'status', label: 'Tình trạng', alignRight: false },
   { id: '' },
 ];
@@ -72,6 +75,9 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function User() {
+  const dispatch = useDispatch();
+  const { booking } = useSelector((store) => store.bookingReducer);
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -92,7 +98,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = booking.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -127,11 +133,15 @@ export default function User() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - booking.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(booking, getComparator(order, orderBy), filterName);
 
   const isUserNotFound = filteredUsers.length === 0;
+
+  useEffect(() => {
+    dispatch(getAllBooking());
+  }, []);
 
   return (
     <Page title="User">
@@ -152,14 +162,14 @@ export default function User() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={booking.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { num, id, sitName, cusName, serName, status } = row;
+                    const { place, id, description, totalPrice, status, sitter } = row;
                     const isItemSelected = selected.indexOf(id) !== -1;
 
                     return (
@@ -174,35 +184,40 @@ export default function User() {
                         <TableCell padding="checkbox">
                           <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
                         </TableCell>
-                        <TableCell align="left">{num}</TableCell>
                         <TableCell align="left">{id}</TableCell>
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={sitName} />
                             <Typography variant="subtitle2" noWrap>
-                              {sitName}
+                              {description}
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
+                        {/* <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Avatar alt={cusName} />
                             <Typography variant="subtitle2" noWrap>
                               {cusName}
                             </Typography>
                           </Stack>
-                        </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            {/* <Avatar alt={serName} /> */}
-                            <Typography variant="subtitle2" noWrap>
-                              {serName}
-                            </Typography>
-                          </Stack>
+                        </TableCell> */}
+                        <TableCell align="left">
+                          <Typography variant="subtitle2" noWrap>
+                            {sitter?.fullName}
+                          </Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'working' && 'error') || 'success'}>
-                            {sentenceCase(status)}
+                          <Typography variant="subtitle2" noWrap>
+                            {place}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Typography variant="subtitle2" noWrap>
+                            {totalPrice}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Label variant="ghost" color={(status?.statusName === 'DONE' && 'error') || 'success'}>
+                            {sentenceCase(status?.statusName)}
                           </Label>
                         </TableCell>
                         <TableCell align="right">
@@ -234,7 +249,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={booking.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

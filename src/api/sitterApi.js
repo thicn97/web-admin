@@ -11,6 +11,15 @@ const sitterApi = {
   getAllSitter: (url = '/sitter') => {
     return axiosClient.get(url);
   },
+  getAllApplied: (url = '/candidate') => {
+    return axiosClient.get(url);
+  },
+  approveApplied: (email, url = '/candidate') => {
+    return axiosClient.put(`${url}/${email}`);
+  },
+  getAllBooking: (url = '/booking') => {
+    return axiosClient.get(url);
+  },
 };
 
 // class SitterApi {
