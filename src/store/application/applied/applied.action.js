@@ -24,3 +24,13 @@ export const approveApplied = (email) => {
     });
   };
 };
+
+export const rejectApplied = (email) => {
+  return async (dispatch) => {
+    const { data } = await sitterApi.rejectApplied(email);
+    dispatch({
+      type: APPLIED_ACTION.APPROVE,
+      payload: data,
+    });
+  };
+};

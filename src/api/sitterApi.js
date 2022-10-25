@@ -20,6 +20,9 @@ const sitterApi = {
   getAllBooking: (url = '/booking') => {
     return axiosClient.get(url);
   },
+  rejectApplied: (email, url = '/candidate') => {
+    return axiosClient.delete(`${url}/${email}`);
+  },
 };
 
 // class SitterApi {

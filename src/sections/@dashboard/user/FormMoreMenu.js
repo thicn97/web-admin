@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
-import { approveApplied } from '../../../store/actions';
+import { approveApplied, rejectApplied } from '../../../store/actions';
 
 // ----------------------------------------------------------------------
 
@@ -15,8 +15,11 @@ export default function UserMoreMenu({ appliedForm }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleApprove = () => {
-    console.log(appliedForm);
     dispatch(approveApplied(appliedForm?.email));
+  };
+
+  const handleReject = () => {
+    dispatch(rejectApplied(appliedForm?.email));
   };
   return (
     <>
@@ -48,7 +51,7 @@ export default function UserMoreMenu({ appliedForm }) {
           <ListItemText primary="Phê duyệt" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
 
-        <MenuItem sx={{ color: 'text.secondary' }}>
+        <MenuItem sx={{ color: 'text.secondary' }} onClick={() => handleReject()}>
           <ListItemIcon>
             <Iconify icon="akar-icons:circle-x" width={24} height={24} />
           </ListItemIcon>
