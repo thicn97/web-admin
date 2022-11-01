@@ -23,6 +23,12 @@ const sitterApi = {
   rejectApplied: (email, url = '/candidate') => {
     return axiosClient.delete(`${url}/${email}`);
   },
+  getAllCustomer: (url = '/customer') => {
+    return axiosClient.get(url);
+  },
+  getCustomerById: (id, url = '/customer/detail') => {
+    return axiosClient.get(`${url}/${id}`);
+  },
 };
 
 // class SitterApi {

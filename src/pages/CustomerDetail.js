@@ -1,82 +1,90 @@
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 // @mui
 import { styled } from '@mui/material/styles';
 import {
-    Button,
-    Typography,
-    Container,
-    Box,
-    Stack,
-    Card,
-    Avatar,
-    CardContent,
-    CardHeader,
-    CardMedia,
-    TextField,
-    ListItem,
-    List,
-    ListItemButton,
-    ListItemText,
-    Checkbox,
-    ListItemIcon,
-    Rating,
-    Stepper,
-    Step,
-    StepLabel,
+  Button,
+  Typography,
+  Container,
+  Box,
+  Stack,
+  Card,
+  Avatar,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  TextField,
+  ListItem,
+  List,
+  ListItemButton,
+  ListItemText,
+  Checkbox,
+  ListItemIcon,
+  Rating,
+  Stepper,
+  Step,
+  StepLabel,
 } from '@mui/material';
 // components
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
+import { getCustomerById } from '../store/actions';
 
 const steps = ['Đặt lịch', 'Đang thực hiện', 'Hoàn thành'];
 
 export default function BookingDetail() {
-    const { customerId } = useParams();
-    useEffect(() => { }, [customerId]);
+  const { customerId } = useParams();
+  const dispatch = useDispatch();
+  const { customer } = useSelector((store) => store.customerReducer);
 
-    const [checked, setChecked] = useState([0, 2]);
+  useEffect(() => {
+    dispatch(getCustomerById(customerId));
+  }, [customerId]);
 
-    const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
+  const [checked, setChecked] = useState([0, 2]);
 
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
 
-        setChecked(newChecked);
-    };
-    return (
-        <Page title="Booking">
-            <Container>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                    <Box>
-                        <Typography variant="h4" gutterBottom>
-                            Thông tin chi tiết của khách hàng {customerId}
-                        </Typography>
-                        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                            Thông tin chi tiết khách hàng
-                        </Typography>
-                    </Box>
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
+  };
+  return (
+    <Page title="Booking">
+      <Container>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Box>
+            <Typography variant="h4" gutterBottom>
+              Thông tin chi tiết của khách hàng {customer?.fullName}
+            </Typography>
+            <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+              Thông tin chi tiết khách hàng
+            </Typography>
+          </Box>
+        </Stack>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Card sx={{ width: '50%', p: 2 }}>
+            <CardMedia sx={{ width: '100%' }}>
+              <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
+                <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
+                <Stack>
+                  <Typography variant="h5">{customer?.fullName}</Typography>
+                  <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+                    {customer?.phone}
+                  </Typography>
                 </Stack>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                    <Card sx={{ width: '50%', p: 2 }}>
-                        <CardMedia sx={{ width: '100%' }}>
-                            <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
-                                <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
-                                <Stack>
-                                    <Typography variant="h5">Lê Nguyễn Minh Tinh</Typography>
-                                    <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                                        xxx568
-                                    </Typography>
-                                </Stack>
-                            </Stack>
-                        </CardMedia>
-                    </Card>
-                    {/* <Card sx={{ width: '30%', p: 2 }}>
+              </Stack>
+            </CardMedia>
+          </Card>
+          {/* <Card sx={{ width: '30%', p: 2 }}>
             <CardMedia sx={{ width: '100%' }}>
               <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
                 <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
@@ -90,7 +98,7 @@ export default function BookingDetail() {
               </Stack>
             </CardMedia>
           </Card> */}
-                    {/* <Card sx={{ width: '30%', p: 2 }}>
+          {/* <Card sx={{ width: '30%', p: 2 }}>
             <CardMedia sx={{ width: '100%' }}>
               <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
                 <Stack>
@@ -104,73 +112,61 @@ export default function BookingDetail() {
               </Stack>
             </CardMedia>
           </Card> */}
-                </Stack>
-                <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
-                    <Stack direction="column" spacing={4}>
-                        <TextField
-                            label="Họ và Tên"
-                            defaultValue="Nguyen Van B"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                        />
-                        <TextField
-                            label="Tên người được chăm sóc"
-                            defaultValue="T2, 10/10/2022"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                        />
-                    </Stack>
-                    <Stack direction="column" spacing={4}>
-                        <TextField
-                            label="Số điện thoại"
-                            defaultValue="Viet Nam"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                        />
-                        <TextField
-                            label="Số điện thoại khẩn cấp"
-                            defaultValue="T5, 13/10/2022"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                        />
-                    </Stack>
-                    <Stack direction="column" spacing={4}>
-                        <TextField
-                            label="Email"
-                            defaultValue="Viet Nam"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                        />
-                        <TextField
-                            label="Địa chỉ"
-                            defaultValue="T5, 13/10/2022"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                        />
-                    </Stack>
-                    <Stack direction="column" spacing={4}>
-                        <TextField
-                            label="Mã khách hàng"
-                            defaultValue="Viet Nam"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                        />
-                    </Stack>
-                    {/* <Box>
+        </Stack>
+        <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
+          <Stack direction="column" spacing={4}>
+            <TextField
+              label="Họ và Tên"
+              value={customer?.fullName || ''}
+              key="fullName"
+              InputProps={{
+                readOnly: true,
+              }}
+              variant="outlined"
+            />
+            <TextField
+              label="Ngày sinh"
+              key="dob"
+              value={customer?.dob || ''}
+              InputProps={{
+                readOnly: true,
+              }}
+              variant="outlined"
+            />
+          </Stack>
+          <Stack direction="column" spacing={4}>
+            <TextField
+              label="Số điện thoại"
+              value={customer?.phone || ''}
+              InputProps={{
+                readOnly: true,
+              }}
+              variant="outlined"
+            />
+          </Stack>
+          <Stack direction="column" spacing={4}>
+            <TextField
+              label="Email"
+              key="email"
+              value={customer?.email || ''}
+              InputProps={{
+                readOnly: true,
+              }}
+              variant="outlined"
+            />
+            <TextField
+              label="Địa chỉ"
+              key="address"
+              value={customer?.address || ''}
+              defaultValue=""
+              InputProps={{
+                readOnly: true,
+              }}
+              variant="outlined"
+            />
+          </Stack>
+
+          {/* <Box>
                         <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                             Dịch vụ sử dụng
                         </Typography>
@@ -197,23 +193,20 @@ export default function BookingDetail() {
                             })}
                         </List>
                     </Box> */}
-                </Stack>
-                <Stack>
-                    <TextField
-                        label="Ghi chú"
-                        defaultValue={'Ghi chú dành cho người được chăm sóc...'}
-                        multiline
-                        rows={4}
-                        variant="outlined"
-                    />
-                </Stack>
-                <Stack sx={{ width: '20%', p: 2 }}>
-                    <Button variant="contained" component={RouterLink} to="/dashboard/customer" startIcon={<Iconify icon="akar-icons:arrow-back-thick" />}>
-                        Trở về
-                    </Button>
-                    <Stack mb={2} />
-                </Stack>
-            </Container>
-        </Page>
-    );
+        </Stack>
+
+        <Stack sx={{ width: '20%', p: 2 }}>
+          <Button
+            variant="contained"
+            component={RouterLink}
+            to="/dashboard/customer"
+            startIcon={<Iconify icon="akar-icons:arrow-back-thick" />}
+          >
+            Trở về
+          </Button>
+          <Stack mb={2} />
+        </Stack>
+      </Container>
+    </Page>
+  );
 }
