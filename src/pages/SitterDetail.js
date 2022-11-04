@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -28,12 +30,18 @@ import {
 // components
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
+import { getSitterDetail } from '../store/actions';
+import { toVND } from '../utils/formatNumber';
 
 const steps = ['Đặt lịch', 'Đang thực hiện', 'Hoàn thành'];
 
 export default function BookingDetail() {
+  const dispatch = useDispatch();
+  const { sitter } = useSelector((store) => store.sitterReducer);
   const { sitterId } = useParams();
-  useEffect(() => {}, [sitterId]);
+  useEffect(() => {
+    dispatch(getSitterDetail(sitterId));
+  }, [sitterId]);
 
   const [checked, setChecked] = useState([0, 2]);
 
@@ -55,7 +63,7 @@ export default function BookingDetail() {
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Box>
             <Typography variant="h4" gutterBottom>
-              Thông tin chi tiết của {sitterId}
+              Thông tin chi tiết của {sitter?.fullName}
             </Typography>
             <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
               Thông tin chi tiết chăm sóc viên
@@ -96,7 +104,7 @@ export default function BookingDetail() {
                   <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                     Nhân viên chăm sóc
                   </Typography>
-                  <Rating name="read-only" value={4} readOnly />
+                  <Rating name="read-only" value={sitter?.ratingStar || 0} readOnly />
                 </Stack>
               </Stack>
             </CardMedia>
@@ -120,7 +128,7 @@ export default function BookingDetail() {
           <Stack direction="column" spacing={4}>
             <TextField
               label="Họ và Tên"
-              defaultValue="Nguyen Van A"
+              value={sitter?.fullName}
               InputProps={{
                 readOnly: true,
               }}
@@ -128,7 +136,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Ngày sinh"
-              defaultValue="10/10/1992"
+              value={sitter?.dob}
               InputProps={{
                 readOnly: true,
               }}
@@ -146,7 +154,7 @@ export default function BookingDetail() {
           <Stack direction="column" spacing={4}>
             <TextField
               label="Mức lương trung bình"
-              defaultValue="200000VND/giờ"
+              value={toVND(sitter?.avgPrice)}
               InputProps={{
                 readOnly: true,
               }}
@@ -154,7 +162,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Số điện thoại"
-              defaultValue="+84 9091234562"
+              value={sitter?.phone}
               InputProps={{
                 readOnly: true,
               }}
@@ -162,7 +170,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Email"
-              defaultValue="acb@gmail.com"
+              value={sitter?.email}
               InputProps={{
                 readOnly: true,
               }}
@@ -172,7 +180,7 @@ export default function BookingDetail() {
           <Stack direction="column" spacing={4}>
             <TextField
               label="Địa chỉ"
-              defaultValue="Viet Nam"
+              value={sitter?.address}
               InputProps={{
                 readOnly: true,
               }}
@@ -180,7 +188,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Căn cước công dân"
-              defaultValue="123456789123"
+              value={sitter?.idNumber}
               InputProps={{
                 readOnly: true,
               }}
@@ -193,22 +201,22 @@ export default function BookingDetail() {
               Dịch vụ có thể làm
             </Typography>
             <List sx={{ width: '100%', maxWidth: 480, bgcolor: 'background.paper' }}>
-              {[0, 1, 2, 3].map((value) => {
-                const labelId = `checkbox-list-label-${value}`;
+              {sitter?.sitterServices?.map(({ serviceName, servicePrice, exp, duration }) => {
+                const labelId = `checkbox-list-label-${serviceName}`;
 
                 return (
-                  <ListItem key={value} disablePadding>
-                    <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                  <ListItem key={serviceName} disablePadding>
+                    <ListItemButton role={undefined} onClick={handleToggle(serviceName)} dense>
                       <ListItemIcon>
                         <Checkbox
                           edge="start"
-                          checked={checked.indexOf(value) !== -1}
+                          checked={checked.indexOf(serviceName) !== -1}
                           tabIndex={-1}
                           disableRipple
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </ListItemIcon>
-                      <ListItemText id={labelId} primary={`Dịch vụ ${value + 1} - 20k`} />
+                      <ListItemText id={labelId} primary={`${serviceName} - ${toVND(servicePrice)}`} />
                     </ListItemButton>
                   </ListItem>
                 );

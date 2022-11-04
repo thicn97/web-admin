@@ -2,6 +2,7 @@ const { SERVICE_ACTION } = require('./service.action');
 
 const initState = {
   services: [],
+  service: {},
 };
 
 //
@@ -12,6 +13,11 @@ const serviceReducer = (state = initState, action = {}) => {
       return {
         ...state,
         services: payload,
+      };
+    case SERVICE_ACTION.GET_BY_ID:
+      return {
+        ...state,
+        service: payload,
       };
 
     default:

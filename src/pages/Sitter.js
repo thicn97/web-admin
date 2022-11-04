@@ -204,7 +204,7 @@ export default function User() {
                         </TableCell>
 
                         <TableCell align="right">
-                          <UserMoreMenu />
+                          <UserMoreMenu sitterId={id} />
                         </TableCell>
                       </TableRow>
                     );

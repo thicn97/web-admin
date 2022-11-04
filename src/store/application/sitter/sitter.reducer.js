@@ -2,6 +2,7 @@ import { SITTER_ACTION } from './sitter.action';
 
 const initState = {
   sitters: [],
+  sitter: {},
 };
 
 //
@@ -13,7 +14,11 @@ const sitterReducer = (state = initState, action = {}) => {
         ...state,
         sitters: payload,
       };
-
+    case SITTER_ACTION.GET_BY_ID:
+      return {
+        ...state,
+        sitter: payload,
+      };
     default:
       return state;
   }

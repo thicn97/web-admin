@@ -31,7 +31,7 @@ export default function Router() {
       children: [
         { path: 'app', element: <DashboardApp /> },
         {
-          path: 'user',
+          path: 'service',
           children: [
             { index: true, element: <User /> },
             { path: ':serviceId', element: <ServiceDetail /> },

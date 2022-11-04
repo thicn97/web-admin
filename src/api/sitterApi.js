@@ -20,14 +20,20 @@ const sitterApi = {
   getAllBooking: (url = '/booking') => {
     return axiosClient.get(url);
   },
-  rejectApplied: (email, url = '/candidate') => {
-    return axiosClient.delete(`${url}/${email}`);
+  rejectApplied: (email, url = '/candidate/reject') => {
+    return axiosClient.put(`${url}/${email}`);
   },
   getAllCustomer: (url = '/customer') => {
     return axiosClient.get(url);
   },
   getCustomerById: (id, url = '/customer/detail') => {
     return axiosClient.get(`${url}/${id}`);
+  },
+  getSitterDetail: (id, url = '/sitter/detail') => {
+    return axiosClient.get(`${url}/${id}`);
+  },
+  getServiceById: (id, url = '/service') => {
+    return axiosClient.put(`${url}/${id}`);
   },
 };
 

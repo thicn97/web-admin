@@ -30,6 +30,7 @@ import { UserListHead, UserListToolbar, ScheduleMoreMenu } from '../sections/@da
 // mock
 
 import { getAllBooking } from '../store/actions';
+import { toVND } from '../utils/formatNumber';
 
 // ----------------------------------------------------------------------
 
@@ -212,12 +213,12 @@ export default function User() {
                         </TableCell>
                         <TableCell align="left">
                           <Typography variant="subtitle2" noWrap>
-                            {totalPrice}
+                            {toVND(totalPrice)}
                           </Typography>
                         </TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status?.statusName === 'DONE' && 'error') || 'success'}>
-                            {sentenceCase(status?.statusName)}
+                          <Label variant="ghost" color={(status === 'DONE' && 'error') || 'success'}>
+                            {sentenceCase(status)}
                           </Label>
                         </TableCell>
                         <TableCell align="right">

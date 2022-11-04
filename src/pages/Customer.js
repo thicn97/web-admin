@@ -192,8 +192,8 @@ export default function User() {
                         <TableCell align="left">{gender}</TableCell>
                         <TableCell align="left">{email}</TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status?.statusName === 'DEACTIVE' && 'error') || 'success'}>
-                            {sentenceCase(status?.statusName)}
+                          <Label variant="ghost" color={(status === 'DEACTIVE' && 'error') || 'success'}>
+                            {sentenceCase(status)}
                           </Label>
                         </TableCell>
 

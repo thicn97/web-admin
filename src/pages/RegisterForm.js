@@ -208,8 +208,8 @@ export default function User() {
                           </Stack>
                         </TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status?.statusName === 'DEACTIVE' && 'warning') || 'success'}>
-                            {sentenceCase(status?.statusName || '')}
+                          <Label variant="ghost" color={(status === 'DEACTIVE' && 'warning') || 'success'}>
+                            {sentenceCase(status || '')}
                           </Label>
                         </TableCell>
                         <TableCell align="right">

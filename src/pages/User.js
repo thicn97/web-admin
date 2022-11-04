@@ -212,13 +212,13 @@ export default function User() {
                         <TableCell align="left">{price}</TableCell>
                         <TableCell align="left">{category?.name}</TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status?.statusName === 'DEACTIVE' && 'error') || 'success'}>
-                            {sentenceCase(status?.statusName)}
+                          <Label variant="ghost" color={(status === 'DEACTIVE' && 'error') || 'success'}>
+                            {sentenceCase(status)}
                           </Label>
                         </TableCell>
 
                         <TableCell align="right">
-                          <ServiceMoreMenu />
+                          <ServiceMoreMenu serviceId={id} />
                         </TableCell>
                       </TableRow>
                     );
