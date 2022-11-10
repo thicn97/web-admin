@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -26,6 +26,12 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  Link,
+  Chip,
 } from '@mui/material';
 // components
 import Page from '../components/Page';
@@ -44,6 +50,8 @@ export default function BookingDetail() {
   }, [sitterId]);
 
   const [checked, setChecked] = useState([0, 2]);
+  const [currentImage, setCurrentImage] = useState(0);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -57,8 +65,43 @@ export default function BookingDetail() {
 
     setChecked(newChecked);
   };
+
+  const closeImageViewer = () => {
+    setCurrentImage(0);
+    setIsViewerOpen(false);
+  };
+
+  const openImageViewer = useCallback((index) => {
+    setCurrentImage(index);
+    setIsViewerOpen(true);
+  }, []);
   return (
     <Page title="Booking">
+      <Dialog
+        open={isViewerOpen}
+        onClose={closeImageViewer}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{'CMND Mặt trước'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <Box onClick={() => openImageViewer(0)} component="img" src={sitter?.frontIdImgUrl} />
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+      {/* {isViewerOpen && (
+        <ImageViewer
+          src={[sitter?.frontIdImgUrl, sitter?.backIdImgUrl]}
+          currentIndex={currentImage}
+          onClose={closeImageViewer}
+          disableScroll={false}
+          backgroundStyle={{
+            backgroundColor: 'rgba(0,0,0,0.9)',
+          }}
+          closeOnClickOutside
+        />
+      )} */}
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Box>
@@ -70,17 +113,6 @@ export default function BookingDetail() {
             </Typography>
           </Box>
         </Stack>
-        {/* <Stack mb={2}>
-          <Box sx={{ width: '100%' }}>
-            <Stepper activeStep={3} alternativeLabel>
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Box>
-        </Stack> */}
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           {/* <Card sx={{ width: '30%', p: 2 }}>
             <CardMedia sx={{ width: '100%' }}>
@@ -98,37 +130,30 @@ export default function BookingDetail() {
           <Card sx={{ width: '50%', p: 2 }}>
             <CardMedia sx={{ width: '100%' }}>
               <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
-                <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
+                <Stack justifyContent="space-around" alignItems="center">
+                  <Avatar src={sitter?.avatarUrl} sx={{ width: 80, height: 80 }}>
+                    N
+                  </Avatar>
+                  <Rating name="read-only" value={sitter?.ratingStart || 0} readOnly />
+                </Stack>
                 <Stack>
-                  <Typography variant="h5">Nguyễn Văn A</Typography>
+                  <Typography variant="h5">{sitter?.fullName}</Typography>
                   <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                     Nhân viên chăm sóc
                   </Typography>
-                  <Rating name="read-only" value={sitter?.ratingStar || 0} readOnly />
+
+                  <Chip sx={{ m: 1 }} label="CMND Mặt trước" onClick={() => openImageViewer(0)} />
+                  <Chip sx={{ m: 1 }} label="CMND Mặt sau" onClick={() => openImageViewer(0)} />
                 </Stack>
               </Stack>
             </CardMedia>
           </Card>
-          {/* <Card sx={{ width: '30%', p: 2 }}>
-            <CardMedia sx={{ width: '100%' }}>
-              <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
-                <Stack>
-                  <Typography variant="h4" color="green">
-                    Tổng tiền: +400.000đ
-                  </Typography>
-                  <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                    Đã bao gồm VAT và phụ phí
-                  </Typography>
-                </Stack>
-              </Stack>
-            </CardMedia>
-          </Card> */}
         </Stack>
         <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
           <Stack direction="column" spacing={4}>
             <TextField
               label="Họ và Tên"
-              value={sitter?.fullName}
+              value={sitter?.fullName || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -136,7 +161,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Ngày sinh"
-              value={sitter?.dob}
+              value={sitter?.dob || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -162,7 +187,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Số điện thoại"
-              value={sitter?.phone}
+              value={sitter?.phone || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -170,7 +195,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Email"
-              value={sitter?.email}
+              value={sitter?.email || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -180,7 +205,7 @@ export default function BookingDetail() {
           <Stack direction="column" spacing={4}>
             <TextField
               label="Địa chỉ"
-              value={sitter?.address}
+              value={sitter?.address || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -188,7 +213,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Căn cước công dân"
-              value={sitter?.idNumber}
+              value={sitter?.idNumber || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -201,37 +226,28 @@ export default function BookingDetail() {
               Dịch vụ có thể làm
             </Typography>
             <List sx={{ width: '100%', maxWidth: 480, bgcolor: 'background.paper' }}>
-              {sitter?.sitterServices?.map(({ serviceName, servicePrice, exp, duration }) => {
-                const labelId = `checkbox-list-label-${serviceName}`;
+              {sitter?.sitterServicesResponseDTOS?.map(({ name, exp, price }) => {
+                const labelId = `checkbox-list-label-${name}`;
 
                 return (
-                  <ListItem key={serviceName} disablePadding>
-                    <ListItemButton role={undefined} onClick={handleToggle(serviceName)} dense>
+                  <ListItem key={name} disablePadding>
+                    <ListItemButton role={undefined} onClick={handleToggle(name)} dense>
                       <ListItemIcon>
                         <Checkbox
                           edge="start"
-                          checked={checked.indexOf(serviceName) !== -1}
+                          checked={checked.indexOf(name) !== -1}
                           tabIndex={-1}
                           disableRipple
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </ListItemIcon>
-                      <ListItemText id={labelId} primary={`${serviceName} - ${toVND(servicePrice)}`} />
+                      <ListItemText id={labelId} primary={`${name} - ${toVND(price)}`} />
                     </ListItemButton>
                   </ListItem>
                 );
               })}
             </List>
           </Box>
-        </Stack>
-        <Stack>
-          <TextField
-            label="Ghi chú"
-            defaultValue={'Ghi chú dành cho người được chăm sóc...'}
-            multiline
-            rows={4}
-            variant="outlined"
-          />
         </Stack>
         <Stack sx={{ width: '20%', p: 2 }}>
           <Button

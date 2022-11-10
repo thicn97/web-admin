@@ -36,7 +36,7 @@ import { toVND } from '../utils/formatNumber';
 
 const TABLE_HEAD = [
   { id: 'num', label: 'STT', alignRight: false },
-  { id: 'id', label: 'Mã đơn', alignRight: false },
+  { id: 'id', label: 'Ghi chú', alignRight: false },
   { id: 'sitName', label: 'Chăm sóc viên', alignRight: false },
   { id: 'cusName', label: 'Địa điểm', alignRight: false },
   { id: 'serName', label: 'Giá tiền', alignRight: false },
