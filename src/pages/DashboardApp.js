@@ -1,4 +1,6 @@
 import { faker } from '@faker-js/faker';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
@@ -17,11 +19,18 @@ import {
   AppCurrentSubject,
   AppConversionRates,
 } from '../sections/@dashboard/app';
+import { getDashboardBooking } from '../store/actions';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardApp() {
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const { numOfBooking, revenueBooking } = useSelector((store) => store.dashboardReducer);
+
+  useEffect(() => {
+    dispatch(getDashboardBooking('2022-10-01', '2022-12-30'));
+  }, []);
 
   return (
     <Page title="Dashboard">
@@ -40,11 +49,21 @@ export default function DashboardApp() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Tổng số nhân viên" total={57} color="warning" icon={'medical-icon:i-care-staff-area'} />
+            <AppWidgetSummary
+              title="Tổng số đơn hàng"
+              total={numOfBooking}
+              color="warning"
+              icon={'medical-icon:i-care-staff-area'}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Tổng doanh thu" total={1049258589} color="error" icon={'dashicons:money-alt'} />
+            <AppWidgetSummary
+              title="Tổng doanh thu"
+              total={revenueBooking}
+              color="error"
+              icon={'dashicons:money-alt'}
+            />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
@@ -104,18 +123,6 @@ export default function DashboardApp() {
               ]}
             />
           </Grid>
-
-          
-
-          
-
-          
-
-          
-
-          
-
-          
         </Grid>
       </Container>
     </Page>

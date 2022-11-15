@@ -36,10 +36,10 @@ import { toVND } from '../utils/formatNumber';
 
 const TABLE_HEAD = [
   { id: 'num', label: 'STT', alignRight: false },
-  { id: 'id', label: 'Ghi chú', alignRight: false },
   { id: 'sitName', label: 'Chăm sóc viên', alignRight: false },
   { id: 'cusName', label: 'Địa điểm', alignRight: false },
   { id: 'serName', label: 'Giá tiền', alignRight: false },
+  { id: 'id', label: 'Tạm ứng', alignRight: false },
   { id: 'status', label: 'Tình trạng', alignRight: false },
   { id: '' },
 ];
@@ -170,7 +170,7 @@ export default function User() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { place, id, description, totalPrice, status, sitter } = row;
+                    const { place, id, description, totalPrice, status, sitterName, deposit } = row;
                     const isItemSelected = selected.indexOf(id) !== -1;
 
                     return (
@@ -186,13 +186,6 @@ export default function User() {
                           <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
                         </TableCell>
                         <TableCell align="left">{id}</TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Typography variant="subtitle2" noWrap>
-                              {description}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
                         {/* <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Avatar alt={cusName} />
@@ -203,7 +196,7 @@ export default function User() {
                         </TableCell> */}
                         <TableCell align="left">
                           <Typography variant="subtitle2" noWrap>
-                            {sitter?.fullName}
+                            {sitterName}
                           </Typography>
                         </TableCell>
                         <TableCell align="left">
@@ -215,6 +208,13 @@ export default function User() {
                           <Typography variant="subtitle2" noWrap>
                             {toVND(totalPrice)}
                           </Typography>
+                        </TableCell>
+                        <TableCell component="th" scope="row" padding="none">
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <Typography variant="subtitle2" noWrap>
+                              {toVND(deposit)}
+                            </Typography>
+                          </Stack>
                         </TableCell>
                         <TableCell align="left">
                           <Label variant="ghost" color={(status === 'DONE' && 'error') || 'success'}>

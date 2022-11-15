@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -26,6 +26,11 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
 } from '@mui/material';
 // components
 import Page from '../components/Page';
@@ -37,6 +42,12 @@ const steps = ['Đặt lịch', 'Đang thực hiện', 'Hoàn thành'];
 
 export default function BookingDetail() {
   const { registerId } = useParams();
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
+  const [popupData, setPopupData] = useState({
+    title: '',
+    url: '',
+  });
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAppliedFormById(registerId));
@@ -58,30 +69,78 @@ export default function BookingDetail() {
 
     setChecked(newChecked);
   };
+
+  const openImageViewer = useCallback((title, url) => {
+    setPopupData({
+      title,
+      url,
+    });
+    setIsViewerOpen(true);
+  }, []);
+
+  const closeImageViewer = () => {
+    setPopupData({
+      title: '',
+      url: '',
+    });
+    setIsViewerOpen(false);
+  };
+
   return (
     <Page title="Booking">
       <Container>
+        <Dialog
+          open={isViewerOpen}
+          onClose={closeImageViewer}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{popupData.title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <Box component="img" src={popupData.url} />
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Box>
             <Typography variant="h4" gutterBottom>
               Thông tin chi tiết đơn đăng ký {candidate?.fullName}
             </Typography>
-            {/* <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                            Thông tin chi tiết khách hàng
-                        </Typography> */}
           </Box>
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Card sx={{ width: '50%', p: 2 }}>
             <CardMedia sx={{ width: '100%' }}>
               <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
-                <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
+                <Avatar sx={{ width: 80, height: 80 }} src={candidate?.avatarUrl}>
+                  N
+                </Avatar>
                 <Stack>
                   <Typography variant="h5">{candidate?.fullName}</Typography>
+                  <Chip
+                    sx={{ m: 1 }}
+                    label="CMND Mặt trước"
+                    onClick={() => openImageViewer('CMND Mặt trước', candidate?.frontIdImgUrl)}
+                  />
+                  <Chip
+                    sx={{ m: 1 }}
+                    label="CMND Mặt sau"
+                    onClick={() => openImageViewer('CMND Mặt sau', candidate?.backIdImgUrl)}
+                  />
                 </Stack>
               </Stack>
             </CardMedia>
           </Card>
+          <Box>
+            <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+              Chứng chỉ đăng ký
+            </Typography>
+            {candidate?.certificatesResponseDTOS?.map(({ name, url }) => {
+              const labelId = `checkbox-list-label-${name}`;
+              return <Chip sx={{ m: 1 }} label={name} onClick={() => openImageViewer(name, url)} />;
+            })}
+          </Box>
         </Stack>
         <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
           <Stack direction="column" spacing={4}>
@@ -165,33 +224,6 @@ export default function BookingDetail() {
               })}
             </List>
           </Box>
-          {/* <Box>
-                        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                            Dịch vụ sử dụng
-                        </Typography>
-                        <List sx={{ width: '100%', maxWidth: 480, bgcolor: 'background.paper' }}>
-                            {[0, 1, 2, 3].map((value) => {
-                                const labelId = `checkbox-list-label-${value}`;
-
-                                return (
-                                    <ListItem key={value} disablePadding>
-                                        <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
-                                            <ListItemIcon>
-                                                <Checkbox
-                                                    edge="start"
-                                                    checked={checked.indexOf(value) !== -1}
-                                                    tabIndex={-1}
-                                                    disableRipple
-                                                    inputProps={{ 'aria-labelledby': labelId }}
-                                                />
-                                            </ListItemIcon>
-                                            <ListItemText id={labelId} primary={`Dịch vụ ${value + 1} - 20k`} />
-                                        </ListItemButton>
-                                    </ListItem>
-                                );
-                            })}
-                        </List>
-                    </Box> */}
         </Stack>
         <Stack>
           <TextField label="Ghi chú" value={candidate?.description || ''} multiline rows={4} variant="outlined" />

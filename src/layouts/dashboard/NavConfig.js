@@ -18,7 +18,7 @@ const navConfig = [
     icon: getIcon('material-symbols:home-repair-service-rounded'),
   },
   {
-    title: 'Quản lý đặt lịch',
+    title: 'Xem đặt lịch',
     path: '/dashboard/schedule',
     icon: getIcon('healthicons:i-schedule-school-date-time'),
   },

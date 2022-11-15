@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -26,6 +26,11 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
 } from '@mui/material';
 // components
 import Page from '../components/Page';
@@ -38,6 +43,13 @@ export default function BookingDetail() {
   const { customerId } = useParams();
   const dispatch = useDispatch();
   const { customer } = useSelector((store) => store.customerReducer);
+
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
+  const [popupData, setPopupData] = useState({
+    title: '',
+    url: '',
+  });
 
   useEffect(() => {
     dispatch(getCustomerById(customerId));
@@ -57,9 +69,38 @@ export default function BookingDetail() {
 
     setChecked(newChecked);
   };
+
+  const openImageViewer = useCallback((title, url) => {
+    setPopupData({
+      title,
+      url,
+    });
+    setIsViewerOpen(true);
+  }, []);
+
+  const closeImageViewer = () => {
+    setPopupData({
+      title: '',
+      url: '',
+    });
+    setIsViewerOpen(false);
+  };
   return (
     <Page title="Booking">
       <Container>
+        <Dialog
+          open={isViewerOpen}
+          onClose={closeImageViewer}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{popupData.title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <Box component="img" src={popupData.url} />
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Box>
             <Typography variant="h4" gutterBottom>
@@ -74,12 +115,24 @@ export default function BookingDetail() {
           <Card sx={{ width: '50%', p: 2 }}>
             <CardMedia sx={{ width: '100%' }}>
               <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
-                <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
+                <Avatar src={customer?.avatarImgUrl} sx={{ width: 80, height: 80 }}>
+                  N
+                </Avatar>
                 <Stack>
                   <Typography variant="h5">{customer?.fullName}</Typography>
                   <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                     {customer?.phone}
                   </Typography>
+                  <Chip
+                    sx={{ m: 1 }}
+                    label="CMND Mặt trước"
+                    onClick={() => openImageViewer('CMND Mặt trước', customer?.frontIdImgUrl)}
+                  />
+                  <Chip
+                    sx={{ m: 1 }}
+                    label="CMND Mặt sau"
+                    onClick={() => openImageViewer('CMND Mặt sau', customer?.backIdImgUrl)}
+                  />
                 </Stack>
               </Stack>
             </CardMedia>

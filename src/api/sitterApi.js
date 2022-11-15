@@ -38,14 +38,11 @@ const sitterApi = {
   getCandidateById: (id, url = '/candidate/get-by-id') => {
     return axiosClient.get(`${url}/${id}`);
   },
+  getBookingRevenue: (startDate, endDate, url = '/booking/revenue') => {
+    return axiosClient.post(url, { startDate, endDate });
+  },
+  getNumOfBooking: (startDate, endDate, url = '/booking/count-booking') => {
+    return axiosClient.post(url, { startDate, endDate });
+  },
 };
-
-// class SitterApi {
-//     async getAllSitter() {
-//         const url = '/sitter';
-//         return await axiosClient.get(url);
-//     }
-// }
-// const sitterAPI = new SitterApi();
-
 export default sitterApi;

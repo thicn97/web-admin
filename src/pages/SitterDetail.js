@@ -90,18 +90,6 @@ export default function BookingDetail() {
           </DialogContentText>
         </DialogContent>
       </Dialog>
-      {/* {isViewerOpen && (
-        <ImageViewer
-          src={[sitter?.frontIdImgUrl, sitter?.backIdImgUrl]}
-          currentIndex={currentImage}
-          onClose={closeImageViewer}
-          disableScroll={false}
-          backgroundStyle={{
-            backgroundColor: 'rgba(0,0,0,0.9)',
-          }}
-          closeOnClickOutside
-        />
-      )} */}
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Box>
@@ -134,16 +122,15 @@ export default function BookingDetail() {
                   <Avatar src={sitter?.avatarUrl} sx={{ width: 80, height: 80 }}>
                     N
                   </Avatar>
-                  <Rating name="read-only" value={sitter?.ratingStart || 0} readOnly />
+                  <Rating name="read-only" value={sitter?.ratingStar || 0} readOnly />
                 </Stack>
                 <Stack>
                   <Typography variant="h5">{sitter?.fullName}</Typography>
                   <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                     Nhân viên chăm sóc
                   </Typography>
-
                   <Chip sx={{ m: 1 }} label="CMND Mặt trước" onClick={() => openImageViewer(0)} />
-                  <Chip sx={{ m: 1 }} label="CMND Mặt sau" onClick={() => openImageViewer(0)} />
+                  <Chip sx={{ m: 1 }} label="CMND Mặt sau" onClick={() => openImageViewer(1)} />
                 </Stack>
               </Stack>
             </CardMedia>
