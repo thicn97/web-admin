@@ -53,6 +53,7 @@ export default function BookingDetail() {
       duration: service?.duration || '',
       price: service?.price || 0,
       description: service?.description || '',
+      commission: service?.commission || '',
     },
     onSubmit: (values) => {
       dispatch(updateService({ id: serviceId, ...values }));
@@ -124,6 +125,17 @@ export default function BookingDetail() {
               name="duration"
               InputProps={{
                 endAdornment: <InputAdornment position="start">phút</InputAdornment>,
+              }}
+              variant="outlined"
+            />
+            <TextField
+              label="Chiết khấu"
+              value={values.commission}
+              onChange={handleChange}
+              id="commission"
+              name="commission"
+              InputProps={{
+                endAdornment: <InputAdornment position="start">%</InputAdornment>,
               }}
               variant="outlined"
             />
