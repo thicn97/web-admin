@@ -33,12 +33,10 @@ import { styled } from '@mui/material/styles';
 import Iconify from '../components/Iconify';
 // components
 import Page from '../components/Page';
-import { getServiceById } from '../store/actions';
+import { getServiceById, updateService } from '../store/actions';
 import { toVND } from '../utils/formatNumber';
 
 // @mui
-
-const steps = ['Đặt lịch', 'Đang thực hiện', 'Hoàn thành'];
 
 export default function BookingDetail() {
   const dispatch = useDispatch();
@@ -49,30 +47,15 @@ export default function BookingDetail() {
     dispatch(getServiceById(serviceId));
   }, [serviceId]);
 
-  const [checked, setChecked] = useState([0, 2]);
-
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
-
-  const { handleChange, values, handleSubmit } = useFormik({
+  const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
       name: service?.name || '',
       duration: service?.duration || '',
-      price: toVND(service?.price) || 0,
+      price: service?.price || 0,
       description: service?.description || '',
     },
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      dispatch(updateService({ id: serviceId, ...values }));
     },
     enableReinitialize: true,
   });
@@ -85,54 +68,8 @@ export default function BookingDetail() {
             <Typography variant="h4" gutterBottom>
               Thông tin chi tiết dịch vụ {service?.name}
             </Typography>
-            {/* <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                            Thông tin chi tiết khách hàng
-                        </Typography> */}
           </Box>
         </Stack>
-        {/* <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                    <Card sx={{ width: '50%', p: 2 }}>
-                        <CardMedia sx={{ width: '100%' }}>
-                            <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
-                                <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
-                                <Stack>
-                                    <Typography variant="h5">Lê Nguyễn Minh Tinh</Typography>
-                                    <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                                        Mã đơn: xxx568
-                                    </Typography>
-                                </Stack>
-                            </Stack>
-                        </CardMedia>
-                    </Card>
-                    <Card sx={{ width: '30%', p: 2 }}>
-                        <CardMedia sx={{ width: '100%' }}>
-                            <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
-                                <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
-                                <Stack>
-                                    <Typography variant="h5">Nhat Thi (SE62321)</Typography>
-                                    <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                                        Nhân viên chăm sóc
-                                    </Typography>
-                                    <Rating name="read-only" value={4} readOnly />
-                                </Stack>
-                            </Stack>
-                        </CardMedia>
-                    </Card>
-                    <Card sx={{ width: '30%', p: 2 }}>
-                        <CardMedia sx={{ width: '100%' }}>
-                            <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
-                                <Stack>
-                                    <Typography variant="h4" color="green">
-                                        Tổng tiền: +400.000đ
-                                    </Typography>
-                                    <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                                        Đã bao gồm VAT và phụ phí
-                                    </Typography>
-                                </Stack>
-                            </Stack>
-                        </CardMedia>
-                    </Card>
-                </Stack> */}
         <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
           <Stack direction="column" spacing={4}>
             <TextField
@@ -150,9 +87,10 @@ export default function BookingDetail() {
               value={values.price}
               thousandSeparator="."
               decimalSeparator=","
-              onChange={handleChange}
+              valueIsNumericString
+              onValueChange={(numbericValue) => setFieldValue('price', numbericValue.value)}
               customInput={TextField}
-              valueIsNumericString={false}
+              allowNegative={false}
               InputProps={{
                 endAdornment: <InputAdornment position="start">VND</InputAdornment>,
               }}

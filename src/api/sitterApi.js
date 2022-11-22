@@ -47,6 +47,14 @@ const sitterApi = {
   getBookingById: (id, url = '/booking/get-by-id-for-admin') => {
     return axiosClient.get(`${url}/${id}`);
   },
-  // updateService :
+  updateService: (serviceInfo, url = '/service/update') => {
+    return axiosClient.put(url, serviceInfo);
+  },
+  addService: (serviceInfo, url = '/service/add') => {
+    return axiosClient.post(url, serviceInfo);
+  },
+  getCategories: (url = '/category/categories') => {
+    return axiosClient.get(url);
+  },
 };
 export default sitterApi;

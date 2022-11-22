@@ -57,6 +57,25 @@ export default function BookingDetail() {
 
     setChecked(newChecked);
   };
+
+  const getActiveStep = (status) => {
+    let step = -1;
+    switch (status) {
+      case 'WAITING_FOR_SITTER':
+        step = 0;
+        break;
+      case 'DONE':
+        step = 3;
+        break;
+      case 'SITTER_NOT_FOUND':
+        step = -1;
+        break;
+      default:
+        step = 1;
+    }
+    return step;
+  };
+
   return (
     <Page title="Booking">
       <Container>
@@ -72,7 +91,7 @@ export default function BookingDetail() {
         </Stack>
         <Stack mb={2}>
           <Box sx={{ width: '100%' }}>
-            <Stepper activeStep={3} alternativeLabel>
+            <Stepper activeStep={getActiveStep(bookingDetail?.status || 0)} alternativeLabel>
               {steps.map((label) => (
                 <Step key={label}>
                   <StepLabel>{label}</StepLabel>

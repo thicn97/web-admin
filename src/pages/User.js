@@ -32,6 +32,8 @@ import { getAllService } from '../store/actions';
 
 // mock
 import USERLIST from '../_mock/service';
+import { toVND } from '../utils/formatNumber';
+import NewService from '../layouts/popup/NewService';
 
 // ----------------------------------------------------------------------
 
@@ -158,14 +160,7 @@ export default function User() {
               Đây là tất cả dịch vụ có trong <b>ElderlySister</b>
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to="/dashboard/user/newsv"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
-            Thêm dịch vụ
-          </Button>
+          <NewService />
         </Stack>
 
         <Card>
@@ -209,7 +204,7 @@ export default function User() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{price}</TableCell>
+                        <TableCell align="left">{toVND(price)}</TableCell>
                         <TableCell align="left">{category?.name}</TableCell>
                         <TableCell align="left">
                           <Label variant="ghost" color={(status === 'DEACTIVE' && 'error') || 'success'}>

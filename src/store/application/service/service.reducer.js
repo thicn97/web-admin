@@ -3,6 +3,7 @@ const { SERVICE_ACTION } = require('./service.action');
 const initState = {
   services: [],
   service: {},
+  categories: [],
 };
 
 //
@@ -19,7 +20,16 @@ const serviceReducer = (state = initState, action = {}) => {
         ...state,
         service: payload,
       };
-
+    case SERVICE_ACTION.GET_CATEGORIES:
+      return {
+        ...state,
+        categories: payload,
+      };
+    case SERVICE_ACTION.ADD:
+      return {
+        ...state,
+        services: [...state.services, payload],
+      };
     default:
       return state;
   }
