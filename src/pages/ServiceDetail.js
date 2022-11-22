@@ -8,6 +8,7 @@ import {
   CardMedia,
   Checkbox,
   Container,
+  InputAdornment,
   List,
   ListItem,
   ListItemButton,
@@ -21,6 +22,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useFormik } from 'formik';
+import { NumericFormat } from 'react-number-format';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -59,6 +63,20 @@ export default function BookingDetail() {
 
     setChecked(newChecked);
   };
+
+  const { handleChange, values, handleSubmit } = useFormik({
+    initialValues: {
+      name: service?.name || '',
+      duration: service?.duration || '',
+      price: toVND(service?.price) || 0,
+      description: service?.description || '',
+    },
+    onSubmit: (values) => {
+      alert(JSON.stringify(values, null, 2));
+    },
+    enableReinitialize: true,
+  });
+
   return (
     <Page title="Booking">
       <Container>
@@ -119,33 +137,40 @@ export default function BookingDetail() {
           <Stack direction="column" spacing={4}>
             <TextField
               label="Tên dịch vụ"
-              value={service?.name}
-              InputProps={{
-                readOnly: false,
-              }}
+              value={values.name}
+              onChange={handleChange}
+              id="name"
+              name="name"
               variant="outlined"
             />
-            <TextField
+            <NumericFormat
               label="Giá"
-              value={toVND(service?.price)}
+              id="price"
+              name="price"
+              value={values.price}
+              thousandSeparator="."
+              decimalSeparator=","
+              onChange={handleChange}
+              customInput={TextField}
+              valueIsNumericString={false}
               InputProps={{
-                readOnly: false,
+                endAdornment: <InputAdornment position="start">VND</InputAdornment>,
               }}
-              variant="outlined"
             />
           </Stack>
+
           <Stack direction="column" spacing={4}>
             <TextField
               label="Mã dịch vụ"
-              value={service?.id}
+              value={service?.id || ''}
               InputProps={{
-                readOnly: false,
+                readOnly: true,
               }}
               variant="outlined"
             />
             <TextField
               label="Danh mục"
-              value={service?.category?.name}
+              value={service?.category?.name || ''}
               InputProps={{
                 readOnly: false,
               }}
@@ -155,9 +180,12 @@ export default function BookingDetail() {
           <Stack direction="column" spacing={4}>
             <TextField
               label="Thời gian thuê"
-              value={service?.duration}
+              value={values.duration}
+              onChange={handleChange}
+              id="duration"
+              name="duration"
               InputProps={{
-                readOnly: false,
+                endAdornment: <InputAdornment position="start">phút</InputAdornment>,
               }}
               variant="outlined"
             />
@@ -192,22 +220,17 @@ export default function BookingDetail() {
                     </Box> */}
         </Stack>
         <Stack>
-          <TextField label="Thông tin thêm" value={service?.description} multiline rows={4} variant="outlined" />
+          <TextField label="Thông tin thêm" value={service?.description || ''} multiline rows={4} variant="outlined" />
         </Stack>
         <Stack sx={{ width: '20%', p: 2 }}>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to="#"
-            startIcon={<Iconify icon="fluent:save-24-filled" />}
-          >
+          <Button variant="contained" onClick={handleSubmit} startIcon={<Iconify icon="fluent:save-24-filled" />}>
             Lưu
           </Button>
           <Stack mb={2} />
           <Button
             variant="contained"
             component={RouterLink}
-            to="/dashboard/user"
+            to="/dashboard/service"
             startIcon={<Iconify icon="mdi:marker-cancel" />}
             color="error"
           >

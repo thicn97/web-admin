@@ -24,3 +24,7 @@ export const getServiceById = (id) => {
     });
   };
 };
+
+export const updateService = (values) => {
+  return async (dispatch) => {};
+};

@@ -1,3 +1,4 @@
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 // @mui
@@ -28,12 +29,19 @@ import {
 // components
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
+import { getBookingById } from '../store/actions';
+import { toVND } from '../utils/formatNumber';
 
 const steps = ['Đặt lịch', 'Đang thực hiện', 'Hoàn thành'];
 
 export default function BookingDetail() {
   const { bookingId } = useParams();
-  useEffect(() => {}, [bookingId]);
+  const disptach = useDispatch();
+  useEffect(() => {
+    disptach(getBookingById(bookingId));
+  }, [bookingId]);
+
+  const { bookingDetail } = useSelector((store) => store.bookingReducer);
 
   const [checked, setChecked] = useState([0, 2]);
 
@@ -55,7 +63,7 @@ export default function BookingDetail() {
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Box>
             <Typography variant="h4" gutterBottom>
-              Booking of {bookingId}
+              Lịch đặt số {bookingId}
             </Typography>
             <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
               Thông tin chi tiết đặt lịch
@@ -79,8 +87,8 @@ export default function BookingDetail() {
               <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
                 <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
                 <Stack>
-                  <Typography variant="h5">Nhat Thi (xxx568)</Typography>
-                  <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+                  <Typography variant="h5">{bookingDetail?.customerName}</Typography>
+                  <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                     Nguời đặt lịch hẹn
                   </Typography>
                 </Stack>
@@ -92,8 +100,8 @@ export default function BookingDetail() {
               <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
                 <Avatar sx={{ width: 80, height: 80 }}>N</Avatar>
                 <Stack>
-                  <Typography variant="h5">Nhat Thi (SE62321)</Typography>
-                  <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+                  <Typography variant="h5">{bookingDetail?.sitterName}</Typography>
+                  <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                     Nhân viên chăm sóc
                   </Typography>
                   <Rating name="read-only" value={4} readOnly />
@@ -106,7 +114,7 @@ export default function BookingDetail() {
               <Stack direction="row" justifyContent="space-around" sx={{ width: '100%' }}>
                 <Stack>
                   <Typography variant="h4" color="green">
-                    Tổng tiền: +400.000đ
+                    Tổng tiền: {toVND(bookingDetail?.totalPrice)}
                   </Typography>
                   <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                     Đã bao gồm VAT và phụ phí
@@ -119,8 +127,8 @@ export default function BookingDetail() {
         <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
           <Stack direction="column" spacing={4}>
             <TextField
-              label="Người được chăm sóc"
-              defaultValue="Nguyen Van B"
+              label="Tổng thời gian làm việc (h)"
+              value={bookingDetail?.totalTime || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -128,7 +136,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Ngày đặt lịch"
-              defaultValue="T2, 10/10/2022"
+              value={bookingDetail?.startDate || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -137,8 +145,8 @@ export default function BookingDetail() {
           </Stack>
           <Stack direction="column" spacing={4}>
             <TextField
-              label="Địa chỉ"
-              defaultValue="Viet Nam"
+              label="Nơi làm việc"
+              value={bookingDetail?.place || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -146,7 +154,7 @@ export default function BookingDetail() {
             />
             <TextField
               label="Ngày hoàn thành"
-              defaultValue="T5, 13/10/2022"
+              value={bookingDetail?.endDate || ''}
               InputProps={{
                 readOnly: true,
               }}
@@ -159,22 +167,13 @@ export default function BookingDetail() {
               Dịch vụ sử dụng
             </Typography>
             <List sx={{ width: '100%', maxWidth: 480, bgcolor: 'background.paper' }}>
-              {[0, 1, 2, 3].map((value) => {
-                const labelId = `checkbox-list-label-${value}`;
+              {bookingDetail?.bookingDetailResponseDTOList?.map(({ id, serviceName, price }) => {
+                const labelId = `checkbox-list-label-${id}`;
 
                 return (
-                  <ListItem key={value} disablePadding>
-                    <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
-                      <ListItemIcon>
-                        <Checkbox
-                          edge="start"
-                          checked={checked.indexOf(value) !== -1}
-                          tabIndex={-1}
-                          disableRipple
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </ListItemIcon>
-                      <ListItemText id={labelId} primary={`Dịch vụ ${value + 1} - 20k`} />
+                  <ListItem key={id} disablePadding>
+                    <ListItemButton role={undefined} onClick={handleToggle(id)} dense>
+                      <ListItemText id={labelId} primary={`${serviceName} - ${toVND(price)}`} />
                     </ListItemButton>
                   </ListItem>
                 );
@@ -183,13 +182,7 @@ export default function BookingDetail() {
           </Box>
         </Stack>
         <Stack>
-          <TextField
-            label="Ghi chú"
-            defaultValue={'Ghi chú dành cho người được chăm sóc...'}
-            multiline
-            rows={4}
-            variant="outlined"
-          />
+          <TextField label="Ghi chú" value={bookingDetail?.description || ''} multiline rows={4} variant="outlined" />
         </Stack>
         <Stack sx={{ width: '20%', p: 2 }}>
           <Button

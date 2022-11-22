@@ -32,8 +32,8 @@ const sitterApi = {
   getSitterDetail: (id, url = '/sitter/get-by-id') => {
     return axiosClient.get(`${url}/${id}`);
   },
-  getServiceById: (id, url = '/service/services-by-active') => {
-    return axiosClient.put(`${url}/${id}`);
+  getServiceById: (id, url = '/service/get-by-id') => {
+    return axiosClient.get(`${url}${id}`);
   },
   getCandidateById: (id, url = '/candidate/get-by-id') => {
     return axiosClient.get(`${url}/${id}`);
@@ -44,5 +44,9 @@ const sitterApi = {
   getNumOfBooking: (startDate, endDate, url = '/booking/count-booking') => {
     return axiosClient.post(url, { startDate, endDate });
   },
+  getBookingById: (id, url = '/booking/get-by-id-for-admin') => {
+    return axiosClient.get(`${url}/${id}`);
+  },
+  // updateService :
 };
 export default sitterApi;

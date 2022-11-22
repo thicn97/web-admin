@@ -7,7 +7,7 @@ import Iconify from '../../../components/Iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ScheduleMoreMenu() {
+export default function ScheduleMoreMenu({ bookingId }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function ScheduleMoreMenu() {
           <ListItemText
             primary="Xem chi tiết"
             primaryTypographyProps={{ variant: 'body2' }}
-            onClick={() => navigate('/dashboard/schedule/ABC123')}
+            onClick={() => navigate(`/dashboard/schedule/${bookingId}`)}
           />
         </MenuItem>
 

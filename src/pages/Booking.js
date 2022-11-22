@@ -222,7 +222,7 @@ export default function User() {
                           </Label>
                         </TableCell>
                         <TableCell align="right">
-                          <ScheduleMoreMenu />
+                          <ScheduleMoreMenu bookingId={id} />
                         </TableCell>
                       </TableRow>
                     );
