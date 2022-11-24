@@ -6,6 +6,7 @@ export const SERVICE_ACTION = {
   UPDATE: 'SERVICE_UPDATE',
   ADD: 'SERVICE_ADD',
   GET_CATEGORIES: 'SERVICE_GET_CATEGORIES',
+  CHANGE_STATUS: 'SERVICE_CHANGE_STATUS',
 };
 
 export const getAllService = () => {
@@ -55,5 +56,22 @@ export const getCategories = () => {
       type: SERVICE_ACTION.GET_CATEGORIES,
       payload: data,
     });
+  };
+};
+export const changeStatusService = (id, isActived) => {
+  return async (dispatch) => {
+    if (isActived) {
+      const { data } = await sitterApi.deactiveService(id);
+      dispatch({
+        type: SERVICE_ACTION.CHANGE_STATUS,
+        payload: data,
+      });
+    } else {
+      const { data } = await sitterApi.activeService(id);
+      dispatch({
+        type: SERVICE_ACTION.CHANGE_STATUS,
+        payload: data,
+      });
+    }
   };
 };

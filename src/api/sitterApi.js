@@ -56,5 +56,20 @@ const sitterApi = {
   getCategories: (url = '/category/categories') => {
     return axiosClient.get(url);
   },
+  getUpSalaryForm: (id, url = '/sitter/up-salary-form') => {
+    return axiosClient.get(`${url}/${id}`);
+  },
+  approveUpSalaryForm: (id, url = '/sitter/approve-up-salary') => {
+    return axiosClient.put(`${url}/${id}`);
+  },
+  rejectUpSalaryForm: (id, url = '/sitter/reject-up-salary') => {
+    return axiosClient.put(`${url}/${id}`);
+  },
+  activeService: (id, url = '/service/activate') => {
+    return axiosClient.put(`${url}/${id}`);
+  },
+  deactiveService: (id, url = '/service/deactivate') => {
+    return axiosClient.put(`${url}/${id}`);
+  },
 };
 export default sitterApi;

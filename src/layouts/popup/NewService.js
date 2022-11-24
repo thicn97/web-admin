@@ -115,7 +115,9 @@ export default function NewService() {
             SelectProps={{ MenuProps: { MenuListProps: { style: { width: '100%' } } } }}
           >
             {categories.map(({ id, name }) => (
-              <MenuItem value={id}>{name}</MenuItem>
+              <MenuItem key={id} value={id}>
+                {name}
+              </MenuItem>
             ))}
           </TextField>
           <TextField

@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -8,12 +9,14 @@ import {
   CardMedia,
   Checkbox,
   Container,
+  createFilterOptions,
   InputAdornment,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  MenuItem,
   Rating,
   Stack,
   Step,
@@ -24,6 +27,7 @@ import {
 } from '@mui/material';
 import { useFormik } from 'formik';
 import { NumericFormat } from 'react-number-format';
+import toast from 'react-hot-toast';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useParams } from 'react-router-dom';
@@ -33,18 +37,20 @@ import { styled } from '@mui/material/styles';
 import Iconify from '../components/Iconify';
 // components
 import Page from '../components/Page';
-import { getServiceById, updateService } from '../store/actions';
+import { getCategories, getServiceById, updateService } from '../store/actions';
 import { toVND } from '../utils/formatNumber';
 
 // @mui
 
 export default function BookingDetail() {
   const dispatch = useDispatch();
-  const { service } = useSelector((store) => store.serviceReducer);
+  const { service, categories } = useSelector((store) => store.serviceReducer);
+  const filter = createFilterOptions();
 
   const { serviceId } = useParams();
   useEffect(() => {
     dispatch(getServiceById(serviceId));
+    dispatch(getCategories());
   }, [serviceId]);
 
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
@@ -54,9 +60,11 @@ export default function BookingDetail() {
       price: service?.price || 0,
       description: service?.description || '',
       commission: service?.commission || '',
+      categoryId: service?.category?.id || 0,
     },
     onSubmit: (values) => {
       dispatch(updateService({ id: serviceId, ...values }));
+      toast.success('Cập nhật thành công');
     },
     enableReinitialize: true,
   });
@@ -108,13 +116,61 @@ export default function BookingDetail() {
               variant="outlined"
             />
             <TextField
+              id="categoryId"
+              name="categoryId"
+              value={values.categoryId}
+              onChange={handleChange}
+              fullWidth
               label="Danh mục"
-              value={service?.category?.name || ''}
-              InputProps={{
-                readOnly: false,
+              select
+              SelectProps={{ MenuProps: { MenuListProps: { style: { width: '100%' } } } }}
+            >
+              {categories.map(({ id, name }) => (
+                <MenuItem key={id} value={id}>
+                  {name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            {/* <Autocomplete
+              id="categoryId"
+              name="categoryId"
+              value={values.categoryId}
+              onChange={handleChange}
+              filterOptions={(options, params) => {
+                const filtered = filter(options, params);
+
+                const { inputValue } = params;
+                // Suggest the creation of a new value
+                const isExisting = options.some((option) => inputValue === option.name);
+                if (inputValue !== '' && !isExisting) {
+                  filtered.push({
+                    inputValue,
+                    name: `Add "${inputValue}"`,
+                  });
+                }
+
+                return filtered;
               }}
-              variant="outlined"
-            />
+              selectOnFocus
+              clearOnBlur
+              options={categories}
+              getOptionLabel={(option) => {
+                console.log(option);
+                // Value selected with enter, right from the input
+                const category = categories?.find((el) => el.id === option);
+                // Add "xxx" option created dynamically
+                // if (option.inputValue) {
+                //   return option.inputValue;
+                // }
+                // Regular option
+                return option ? category?.name : '';
+              }}
+              renderOption={(props, option) => <li {...props}>{option?.name}</li>}
+              sx={{ width: 300 }}
+              freeSolo
+              renderInput={(params) => <TextField {...params} label="AC" />}
+            /> */}
           </Stack>
           <Stack direction="column" spacing={4}>
             <TextField

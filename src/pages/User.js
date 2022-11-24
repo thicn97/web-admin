@@ -207,13 +207,13 @@ export default function User() {
                         <TableCell align="left">{toVND(price)}</TableCell>
                         <TableCell align="left">{category?.name}</TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'DEACTIVE' && 'error') || 'success'}>
+                          <Label variant="ghost" color={(status === 'DEACTIVATE' && 'error') || 'success'}>
                             {sentenceCase(status)}
                           </Label>
                         </TableCell>
 
                         <TableCell align="right">
-                          <ServiceMoreMenu serviceId={id} />
+                          <ServiceMoreMenu isActived={status !== 'DEACTIVATE'} serviceId={id} />
                         </TableCell>
                       </TableRow>
                     );

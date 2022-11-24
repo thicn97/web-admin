@@ -3,6 +3,7 @@ import { SITTER_ACTION } from './sitter.action';
 const initState = {
   sitters: [],
   sitter: {},
+  sitterForm: {},
 };
 
 //
@@ -18,6 +19,11 @@ const sitterReducer = (state = initState, action = {}) => {
       return {
         ...state,
         sitter: payload,
+      };
+    case SITTER_ACTION.GET_FORM:
+      return {
+        ...state,
+        sitterForm: payload,
       };
     default:
       return state;

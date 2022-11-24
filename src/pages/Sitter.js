@@ -36,10 +36,11 @@ import { getAllSitter } from '../store/actions';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Họ & Tên', alignRight: false },
-  { id: 'company', label: 'Số điện thoại', alignRight: false },
-  { id: 'role', label: 'Địa chỉ', alignRight: false },
-  { id: 'isVerified', label: 'Ngày tham gia', alignRight: false },
-  { id: 'status', label: 'Giới tính', alignRight: false },
+  { id: 'phone', label: 'Số điện thoại', alignRight: false },
+  { id: 'address', label: 'Địa chỉ', alignRight: false },
+  { id: 'createDate', label: 'Ngày tham gia', alignRight: false },
+  { id: 'gender', label: 'Giới tính', alignRight: false },
+  { id: 'isForm', label: 'Đơn đăng ký', alignRight: false },
   { id: '' },
 ];
 
@@ -171,7 +172,7 @@ export default function User() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, username, fullName, phone, gender, address, createDate } = row;
+                    const { id, username, fullName, phone, gender, isForm, address, createDate } = row;
                     const isItemSelected = selected.indexOf(username) !== -1;
 
                     return (
@@ -202,7 +203,11 @@ export default function User() {
                             {sentenceCase(gender)}
                           </Label>
                         </TableCell>
-
+                        <TableCell align="left">
+                          <Label variant="ghost" color={(isForm && 'info') || 'red'}>
+                            {isForm ? 'Đang đợi duyệt' : ''}
+                          </Label>
+                        </TableCell>
                         <TableCell align="right">
                           <UserMoreMenu sitterId={id} />
                         </TableCell>

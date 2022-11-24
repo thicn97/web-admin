@@ -30,6 +30,11 @@ const serviceReducer = (state = initState, action = {}) => {
         ...state,
         services: [...state.services, payload],
       };
+    case SERVICE_ACTION.CHANGE_STATUS:
+      return {
+        ...state,
+        services: state.services.map((el) => (el.id === payload.id ? payload : el)),
+      };
     default:
       return state;
   }
