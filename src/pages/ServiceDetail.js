@@ -1,30 +1,5 @@
-import {
-  Autocomplete,
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardMedia,
-  Checkbox,
-  Container,
-  createFilterOptions,
-  InputAdornment,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Rating,
-  Stack,
-  Step,
-  StepLabel,
-  Stepper,
-  TextField,
-  Typography,
-} from '@mui/material';
+import {Box, Button, Container, createFilterOptions, InputAdornment, MenuItem, Stack, TextField, Typography} from '@mui/material';
+import { ref , getDownloadURL, uploadBytesResumable} from "firebase/storage"
 import { useFormik } from 'formik';
 import { NumericFormat } from 'react-number-format';
 import toast from 'react-hot-toast';
@@ -32,43 +7,117 @@ import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
+import {  Upload } from 'antd';
 
-import Iconify from '../components/Iconify';
 // components
+import LinearProgress from '@mui/material/LinearProgress';
+import styles from '../customcss/custom.css'
+import Iconify from '../components/Iconify';
 import Page from '../components/Page';
+import { firebase } from '../firebase/firebase';
 import { getCategories, getServiceById, updateService } from '../store/actions';
-import { toVND } from '../utils/formatNumber';
-
 // @mui
-
+let imageUrl= "";
 export default function BookingDetail() {
   const dispatch = useDispatch();
-  const { service, categories } = useSelector((store) => store.serviceReducer);
   const filter = createFilterOptions();
-
   const { serviceId } = useParams();
+  const { service, categories } = useSelector((store) => store.serviceReducer);
+  const [progressPercent, setProgresspercent] = useState(0);
   useEffect(() => {
     dispatch(getServiceById(serviceId));
     dispatch(getCategories());
   }, [serviceId]);
-
+  
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
       name: service?.name || '',
       duration: service?.duration || '',
       price: service?.price || 0,
       description: service?.description || '',
+      url: service?.url || '',
       commission: service?.commission || '',
       categoryId: service?.category?.id || 0,
     },
     onSubmit: (values) => {
+      console.log(values);
+      if (imageUrl) { 
+        values.url = imageUrl 
+      } 
       dispatch(updateService({ id: serviceId, ...values }));
       toast.success('Cập nhật thành công');
+      imageUrl ="";
     },
     enableReinitialize: true,
   });
+const [fileList, updateFileList] = useState([]);
+  
+  const uploadFile = (file) => {
+    if (file !== undefined) {
+      
+      const storageRef = ref(firebase, `files/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on("state_changed",
+      (snapshot) => {
+        const progress =
+          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setProgresspercent(progress);
+      },
+      (error) => {
+        alert(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          imageUrl= downloadURL;
+          setProgresspercent(0);
+        });
+      }
+    );     
+    }
+  }
+  function checkJpeg(file) {
+    return (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif')
+      && (file.size / 1024 / 1024 < 2)
+  }
+console.log("dấdfasdfasdfasd",service);
+ 
 
+  const normFile = (e) => {
+    return e.fileList.filter(checkJpeg);
+  };
+console.log("fileList", fileList);
+  const propss = {
+    fileList,
+
+    listType: "picture-card",
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      updateFileList(newFileList);
+    },
+
+    beforeUpload: (file) => {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isJpgOrPng || !isLt2M) {
+
+        if (!isJpgOrPng) { console.log('Vui lòng tải lên ảnh !', '', 'error'); }
+        if (!isLt2M) console.log('Ảnh phải nhỏ hơn 2MB!', '', 'error');
+
+      } else uploadFile(file)
+      return false;
+      
+    },
+
+    onChange: (info) => {
+      const temp = info.fileList.filter(checkJpeg);
+      updateFileList(temp);
+      info.fileList = temp;
+      console.log("infor ", temp);
+    },
+
+  };
   return (
     <Page title="Booking">
       <Container>
@@ -79,6 +128,23 @@ export default function BookingDetail() {
             </Typography>
           </Box>
         </Stack>
+        <Stack direction="row" alignItems="center" justifyContent="center" mb={5}>
+        <Box
+          src={values.url}
+            >
+              <div style={styles}> 
+              <Upload
+              {...propss}
+              defaultFileList ={[{uid: '0',name: `${values?.name}.png`, status: 'done', url: values?.url}]}
+              accept="image/*"
+            >
+           {fileList.length < 1 && '+ Upload' }
+            </Upload>
+            {progressPercent !== 0 ? <LinearProgress color="success" value={progressPercent}/> : null}</div>
+            
+            </Box>
+        </Stack>
+        
         <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
           <Stack direction="column" spacing={4}>
             <TextField
@@ -228,11 +294,11 @@ export default function BookingDetail() {
         <Stack>
           <TextField label="Thông tin thêm" value={service?.description || ''} multiline rows={4} variant="outlined" />
         </Stack>
-        <Stack sx={{ width: '20%', p: 2 }}>
+        <Stack  justifyContent="flex-end" direction="row"  spacing={3} mt={4}>
           <Button variant="contained" onClick={handleSubmit} startIcon={<Iconify icon="fluent:save-24-filled" />}>
             Lưu
           </Button>
-          <Stack mb={2} />
+          
           <Button
             variant="contained"
             component={RouterLink}

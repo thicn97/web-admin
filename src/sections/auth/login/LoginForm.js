@@ -5,26 +5,28 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
+import { IconButton, InputAdornment, Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+
 // components
+import toast from 'react-hot-toast';
 import Iconify from '../../../components/Iconify';
+
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
 import axios from '../../../api/axiosClient';
 // ----------------------------------------------------------------------
 const LOGIN_URL = '/auth';
 
 export default function LoginForm() {
-  const userRef = useRef();
   const errRef = useRef();
   const [email, setUser] = useState('');
   const [password, setPwd] = useState('');
-  const [errMsg, setErrMsg] = useState('');
+  let errMsg = null;
   const [success, setSuccess] = useState(false);
 
-  // useEffect(() => {
-  //   userRef.current?.focus();
-  // }, [])
+  useEffect(() => {
+    errMsg = '';
+  }, []);
 
   // useEffect(() => {
   //   setErrMsg('');
@@ -49,6 +51,11 @@ export default function LoginForm() {
     resolver: yupResolver(LoginSchema),
     // defaultValues,
   });
+  function Toast() {
+    return toast.error(errMsg, {
+      position: 'top-right',
+    });
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,13 +76,17 @@ export default function LoginForm() {
       onSubmit();
     } catch (err) {
       if (!err?.response) {
-        setErrMsg('No Server Response');
+        errMsg = 'No Server Response';
+        Toast();
       } else if (err.response?.status === 400) {
-        setErrMsg('Missing Email or Password');
+        errMsg = 'Missing Email or Password';
+        Toast();
       } else if (err.response?.status === 401) {
-        setErrMsg('Unauthorized');
+        errMsg = 'Unauthorized';
+        Toast();
       } else {
-        setErrMsg('Login Failed');
+        errMsg = 'Login Failed';
+        Toast();
       }
       errRef.current?.focus();
     }
