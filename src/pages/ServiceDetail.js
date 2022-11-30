@@ -130,9 +130,17 @@ console.log("fileList", fileList);
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="center" mb={5}>
         <Box
+        component="img"
+        sx={{
+          height: 200,
+          width: 144,
+          maxHeight: { xs: 233, md: 167 },
+          maxWidth: { xs: 350, md: 250 },
+        }}
+        
           src={values.url}
-            >
-              <div style={styles}> 
+            />
+              {/* <div style={styles}> 
               <Upload
               {...propss}
               defaultFileList ={[{uid: '0',name: `${values?.name}.png`, status: 'done', url: values?.url}]}
@@ -140,9 +148,10 @@ console.log("fileList", fileList);
             >
            {fileList.length < 1 && '+ Upload' }
             </Upload>
-            {progressPercent !== 0 ? <LinearProgress color="success" value={progressPercent}/> : null}</div>
+            {progressPercent !== 0 ? <LinearProgress color="success" value={progressPercent}/> : null}
+            </div> */}
             
-            </Box>
+            {/* </Box> */}
         </Stack>
         
         <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
