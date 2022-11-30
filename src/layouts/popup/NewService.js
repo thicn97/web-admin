@@ -13,14 +13,21 @@ import {
   TextField,
   Toolbar,
   Typography,
+  Box
 } from '@mui/material';
 import { useFormik } from 'formik';
 import React, { Fragment, forwardRef, useState, useEffect } from 'react';
 import { NumericFormat } from 'react-number-format';
 import { useDispatch, useSelector } from 'react-redux';
+import {  Upload } from 'antd';
+import LinearProgress from '@mui/material/LinearProgress';
+import { ref , getDownloadURL, uploadBytesResumable} from "firebase/storage"
+import { firebase } from '../../firebase/firebase';
+import styles from '../../customcss/custom.css'
 import Iconify from '../../components/Iconify';
 import { addService, getCategories } from '../../store/actions';
 
+let imageUrl= "";
 const Transition = forwardRef((props, ref) => {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -28,6 +35,7 @@ const Transition = forwardRef((props, ref) => {
 export default function NewService() {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
+  const [progressPercent, setProgresspercent] = useState(0);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -54,13 +62,80 @@ export default function NewService() {
       description: '',
       commission: 0,
       categoryId: 0,
+      url: '',
     },
     onSubmit: (values) => {
+      values.url = imageUrl;
+      
       dispatch(addService(values));
     },
     enableReinitialize: true,
   });
 
+  const [fileList, updateFileList] = useState([]);
+  
+  const uploadFile = (file) => {
+    if (file !== undefined) {
+      
+      const storageRef = ref(firebase, `files/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on("state_changed",
+      (snapshot) => {
+        const progress =
+          Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setProgresspercent(progress);
+      },
+      (error) => {
+        alert(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          imageUrl= downloadURL;
+          setProgresspercent(0);
+        });
+      }
+    );     
+    }
+  }
+  function checkJpeg(file) {
+    return (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif')
+      && (file.size / 1024 / 1024 < 2)
+  }
+  const normFile = (e) => {
+    return e.fileList.filter(checkJpeg);
+  };
+  const propss = {
+    fileList,
+
+    listType: "picture-card",
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      updateFileList(newFileList);
+    },
+
+    beforeUpload: (file) => {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isJpgOrPng || !isLt2M) {
+
+        if (!isJpgOrPng) { console.log('Vui lòng tải lên ảnh !', '', 'error'); }
+        if (!isLt2M) console.log('Ảnh phải nhỏ hơn 2MB!', '', 'error');
+
+      } else uploadFile(file)
+      return false;
+      
+    },
+
+    onChange: (info) => {
+      const temp = info.fileList.filter(checkJpeg);
+      updateFileList(temp);
+      info.fileList = temp;
+      console.log("infor ", temp);
+    },
+
+  };
   return (
     <div>
       <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleClickOpen}>
@@ -152,6 +227,22 @@ export default function NewService() {
             rows={4}
             variant="outlined"
           />
+          <Box
+         
+            >
+              <Typography variant="subtitle1" gutterBottom style={styles}>
+              Ảnh dịch vụ
+      </Typography>
+              <div style={styles}> 
+              <Upload
+              {...propss}
+              defaultFileList ={[{uid: '0',name: `${values?.name}.png`, status: 'done', url: values?.url}]}
+              accept="image/*"
+            >
+           {fileList.length < 1 && '+ Upload' }
+            </Upload>
+            {progressPercent !== 0 ? <LinearProgress color="success" value={progressPercent}/> : null}</div>
+            </Box>
         </Stack>
       </Dialog>
     </div>
